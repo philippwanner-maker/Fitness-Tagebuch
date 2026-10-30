@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#101615">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="description" content="SET – dein lokales Trainingstagebuch. Training, Wissen und Fortschritt.">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="stylesheet" href="style.css?v=23">
+  <link rel="stylesheet" href="muscle-map.css?v=23">
+  <script defer src="muscle-map.js?v=23"></script>
+  <script defer src="app.js?v=23"></script>
+  <title>SET — Dein Training. Dein Rhythmus.</title>
+</head>
+<body>
+  <div class="ambient" aria-hidden="true"></div>
+  <header class="topbar">
+    <a href="#home" class="brand" aria-label="SET Home">SET<span>●</span></a>
+    <span class="local-badge"><i></i> Training lokal · Profil online</span>
+    <button id="install" class="small" hidden>Installieren</button>
+  </header>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <main>
+    <aside id="storageWarning" class="panel warning" hidden></aside>
+    <section id="home" aria-label="Home">
+      <div class="home-header"><p class="eyebrow" id="todayLabel"></p></div>
+      <article class="quote-card"><span class="eyebrow">EIN GEDANKE FÜR HEUTE</span><blockquote id="quote"></blockquote><div class="quote-meta"><span id="quoteAuthor"></span><a id="quoteSource" target="_blank" rel="noopener noreferrer">Quelle ↗</a></div></article>
+      <button class="panel start-card home-card-surface" data-tab="training"><span><span class="eyebrow">ZEIT FÜR DICH</span><strong id="startLabel">Dein Training beginnt hier.</strong><span class="muted">Ein Satz nach dem anderen.</span></span><span class="round-arrow">↗</span></button>
+      <div class="section-heading"><div><p class="eyebrow">WISSEN, DAS DICH WEITERBRINGT</p><h2>Neues</h2></div><span class="pill">Science, not hype.</span></div>
+      <p class="muted intro">Vier Erkenntnisse zum Mitnehmen. Kuratiert, mit Originalquellen – kein Live-Newsfeed.</p>
+      <div id="scienceGrid" class="science-grid"></div>
+      <p class="micro">Zusammenfassungen funktionieren offline. Zum Öffnen der Studien und Zitatquellen brauchst du Internet.</p>
+    </section>
+
+    <section id="training" hidden aria-labelledby="trainingTitle">
+      <p class="eyebrow">DEIN FOKUS. DEIN TEMPO.</p><h1 id="trainingTitle">Neues Training<span>.</span></h1>
+      <form id="workoutForm" novalidate>
+        <div class="panel">
+          <div class="row"><h2 id="editorTitle">Los geht’s.</h2><span id="draftStatus" class="micro">Entwurf · lokal</span></div>
+          <div class="two-col"><label>Trainingsdatum<input type="date" id="date" required></label><label>Trainingstag<select id="workoutDay"></select></label></div>
+          <p class="hint">Ein anderer Trainingstag ersetzt die Übungen und Sätze. „Freies Training“ behält deine Auswahl.</p>
+          <div class="button-row"><button type="button" id="createPlan" class="secondary">＋ Plan erstellen</button><button type="button" id="managePlans" class="quiet">Pläne verwalten</button></div>
+        </div>
+        <div class="row section-heading"><h2>Deine Übungen</h2><span id="exerciseCount" class="pill"></span></div>
+        <p class="hint">Sätze, Gewichte und Wiederholungen werden aus deinem letzten Training übernommen. Passe sie heute mit ± 2,5 kg an. Tippe ins Gewicht für den 20-kg-Langhantel-Rechner.</p>
+        <div id="exercises"></div>
+        <div class="panel"><label for="exerciseSearch">Übung hinzufügen</label><input type="search" id="exerciseSearch" placeholder="Übung suchen …" autocomplete="off"><div id="exerciseResults" class="results"></div><button type="button" id="customExercise" class="secondary full">＋ Eigene Übung</button></div>
+        <button type="submit" id="saveWorkout" class="primary full">Training beenden & speichern →</button>
+        <button type="button" id="cancelEdit" class="secondary full" hidden>Bearbeitung abbrechen</button>
+        <button type="button" id="discardDraft" class="quiet full">Entwurf verwerfen</button>
+      </form>
+    </section>
+
+    <section id="friends" hidden aria-labelledby="friendsTitle">
+      <div class="community-head">
+        <div><p class="eyebrow">GEMEINSAM DRANBLEIBEN</p><h1 id="friendsTitle">Freunde<span>.</span></h1></div>
+        <div class="community-switch" role="tablist" aria-label="Freunde-Ansicht">
+          <button id="showFriendsFeed" class="active" role="tab" aria-controls="friendsFeedView" aria-selected="true">Community</button>
+          <button id="showFriendFinder" role="tab" aria-controls="friendFinderView" aria-selected="false" tabindex="-1">Freunde finden</button>
+          <button id="showFriendRequests" role="tab" aria-controls="friendRequestsView" aria-selected="false" tabindex="-1">Anfragen<span id="friendRequestsBadge" class="request-badge" aria-hidden="true" hidden></span></button>
+        </div>
+      </div>
+
+      <div id="friendsFeedView" role="tabpanel" aria-labelledby="showFriendsFeed">
+        <article class="panel community-upload">
+          <div class="row"><div><p class="eyebrow">HEUTE IM TRAINING</p><h2>Dein Moment</h2></div><span id="communityToday" class="pill"></span></div>
+          <p id="communityUploadHint" class="muted"></p>
+          <label id="communityPhotoButton" class="file-button primary full">＋ Bild hinzufügen<input id="communityPhotoUpload" type="file" accept="image/jpeg,image/png,image/webp" capture="user" class="visually-hidden"></label>
+        </article>
+        <div id="friendsFeed" class="friends-feed" aria-live="polite"></div>
+      </div>
+
+      <div id="friendFinderView" role="tabpanel" aria-labelledby="showFriendFinder" hidden>
+        <article class="panel friend-search-panel">
+          <label for="friendSearch">Freunde suchen</label>
+          <input id="friendSearch" type="search" placeholder="Name oder Kürzel, z. B. SET-4X9F" autocomplete="off">
+          <div id="friendSearchResults" class="friend-results"></div>
+          <button id="findContacts" class="secondary full">Kontakte durchsuchen</button>
+          <button id="shareFriendshipLink" class="primary full">Freundschafts-Link teilen 🤝</button>
+          <p id="contactsSupport" class="micro"></p>
+        </article>
+        <div class="section-heading"><div><p class="eyebrow">VORSCHLÄGE AUS DEINEN KONTAKTEN</p><h2>Vielleicht kennst du …</h2></div></div>
+        <div id="contactSuggestions" class="friend-results"></div>
+      </div>
+      <div id="friendRequestsView" role="tabpanel" aria-labelledby="showFriendRequests" hidden>
+        <div id="friendRequestsList" class="friend-requests" aria-live="polite"><p class="empty">Anfragen werden geladen …</p></div>
+      </div>
+    </section>
+
+    <section id="profile" hidden aria-label="Profil">
+      <div class="profile-header"><label class="avatar" title="Profilbild auswählen"><span id="avatarFallback" aria-hidden="true">◉</span><img id="avatarImage" alt="Dein Profilbild" hidden><input id="avatarUpload" type="file" accept="image/jpeg,image/png,image/webp" class="visually-hidden" aria-label="Profilbild hochladen"><span class="avatar-edit">＋</span></label><div class="profile-identity"><p class="eyebrow">DEIN PERSÖNLICHER RAUM</p><input id="profileNameInput" maxlength="40" placeholder="Dein Name..." aria-label="Dein Name"><h1 id="profileNameHeading" hidden></h1><div class="profile-code-line"><strong id="profilePersonalCode">SET-••••</strong><button id="shareViewProfile" class="quiet" aria-label="Profil-Link teilen" title="Profil-Link teilen">↗</button></div><button id="removeAvatar" class="quiet small" hidden>Profilbild entfernen</button></div></div>
+      <div class="profile-grid">
+        <details class="panel tile home-card-surface" id="calendarTile">
+          <summary class="profile-tile-summary"><span class="profile-tile-copy"><span class="profile-tile-title">Kalender</span><span id="calendarPreview" class="muted"></span></span><span class="round-arrow" aria-hidden="true">↗</span></summary><div class="tile-content"><div class="row"><button id="previousMonth" aria-label="Vorheriger Monat">‹</button><h3 id="calendarMonth"></h3><button id="nextMonth" aria-label="Nächster Monat">›</button></div><button id="calendarToday" class="quiet small">Heute</button><div class="weekdays"><span>Mo</span><span>Di</span><span>Mi</span><span>Do</span><span>Fr</span><span>Sa</span><span>So</span></div><div id="calendarGrid" class="calendar-grid"></div><div id="calendarLegend" class="legend"></div><div id="calendarDetails"></div></div></details>
+        <details class="panel tile home-card-surface" id="progressTile">
+          <summary class="profile-tile-summary"><span class="profile-tile-copy"><span class="profile-tile-title">Fortschritt</span><span id="statsPreview" class="muted"></span></span><span class="round-arrow" aria-hidden="true">↗</span></summary>
+          <div class="tile-content progress-dashboard">
+            <div id="statsNumbers" class="stat-grid"></div>
+            <section class="dashboard-section" aria-label="Fortschritts-Graph">
+            <label class="progress-picker" for="chartExercise">Übung<select id="chartExercise"><option value="">Gesamtfortschritt</option></select></label>
+            <div class="progress-heading"><div><p class="eyebrow" id="progressLabel">KÖRPER GESAMT</p><h3 id="progressValue">—</h3><span id="progressChange" class="micro"></span></div>
+              <div id="e1rmSummary" class="e1rm-summary" hidden><div class="e1rm-label">Geschätztes 1RM <button type="button" class="info-button" id="e1rmInfoButton" popovertarget="e1rmInfo" aria-label="Information zur Epley-Formel">ⓘ</button></div><strong id="e1rmValue">—</strong></div>
+            </div>
+            <div id="chart" aria-live="polite"></div>
+            <details class="chart-data"><summary>Messwerte ansehen</summary><div id="chartTable" class="table-scroll"></div></details>
+            </section>
+            <section class="dashboard-section" aria-label="Muskelaktivität">
+            <div class="muscle-heading"><h3>Muskelaktivität</h3><span class="micro">Letzte 30 Tage</span></div>
+            <div id="muscleGrid" class="muscle-grid" aria-live="polite"></div>
+            </section>
+            <section class="dashboard-section records-section" aria-labelledby="recordsTitle"><div class="muscle-heading"><h3 id="recordsTitle">Persönliche Rekorde</h3><span id="recordsScope" class="micro"></span></div><div id="personalRecords" aria-live="polite"></div></section>
+          </div>
+        </details>
+        <details class="panel tile home-card-surface" id="diaryTile">
+          <summary class="profile-tile-summary"><span class="profile-tile-copy"><span class="profile-tile-title">Tagebuch</span><span id="diaryCount" class="muted"></span></span><span class="round-arrow" aria-hidden="true">↗</span></summary>
+          <div class="tile-content">
+            <div id="diaryLatest"></div>
+            <div id="diaryOlder" hidden></div>
+            <button id="toggleDiary" class="secondary full" aria-controls="diaryOlder" aria-expanded="false">Verlauf ausklappen ↓</button>
+            <details class="data-panel"><summary>Daten & Sicherung <span>↓</span></summary><p class="hint">Einträge und verkleinerte Fotos bleiben in diesem Browser. LocalStorage ist begrenzt und keine dauerhafte Datensicherung. Exportiere regelmäßig ein Backup. Geräte werden nicht synchronisiert.</p><div class="button-row"><button id="exportData">Backup exportieren ↓</button><label class="file-button">Backup importieren<input id="importData" type="file" accept="application/json,.json" class="visually-hidden"></label></div><p id="storageUsage" class="micro"></p><p id="offlineStatus" class="micro"></p><p class="micro">SET · Glass Edition · v3</p></details>
+          </div>
+        </details>
+      </div>
+    </section>
+  </main>
+  <nav class="bottom-nav" aria-label="Hauptnavigation"><button data-tab="home" class="active" aria-current="page"><span class="nav-icon">⌂</span><span>Home</span></button><button data-tab="training" class="nav-training"><span class="nav-icon">＋</span><span>Training</span></button><button data-tab="friends"><span class="nav-icon">♧</span><span>Freunde</span></button><button data-tab="profile"><span class="nav-icon">◎</span><span>Profil</span></button></nav>
+
+  <section id="friendLinkSheet" class="friend-link-sheet" aria-modal="true" aria-labelledby="friendLinkTitle" role="dialog" hidden>
+    <button id="friendLinkDismiss" class="friend-link-backdrop" aria-label="Freundschaftsanfrage später beantworten"></button>
+    <div class="friend-link-card">
+      <span class="sheet-handle" aria-hidden="true"></span>
+      <div id="friendLinkAvatar" class="sheet-avatar" aria-hidden="true"></div>
+      <p class="eyebrow">EINLADUNG ZU SET</p>
+      <h2 id="friendLinkTitle">Mit SET verbinden</h2>
+      <p id="friendLinkMessage" class="muted"></p>
+      <div class="sheet-actions"><button id="acceptFriendLink" class="primary">Anfrage annehmen</button><button id="laterFriendLink" class="quiet">Später</button></div>
+    </div>
+  </section>
+
+  <dialog id="planDialog"><form id="planForm" novalidate><div class="row"><h2 id="planTitle">Dein neuer Plan</h2><button type="button" data-close="planDialog" class="quiet" aria-label="Planeditor schließen">×</button></div><label>Planname<input id="planName" maxlength="80" placeholder="z. B. Mein 3er-Split" required></label><p class="hint">Jeder Tag bekommt eine eigene Farbe. Namen und Übungen bestimmst du.</p><div id="planDays"></div><button type="button" id="addPlanDay" class="secondary full">＋ Trainingstag hinzufügen</button><button class="primary full" type="submit">Plan speichern</button><p id="planError" class="error-text" role="alert"></p></form></dialog>
+  <dialog id="plansDialog" aria-labelledby="plansTitle"><div class="row"><h2 id="plansTitle">Deine Pläne</h2><button type="button" data-close="plansDialog" class="quiet" aria-label="Planverwaltung schließen">×</button></div><p class="hint">Tippe auf einen Plan, um ihn zu aktivieren.</p><div id="planList"></div></dialog>
+  <dialog id="exerciseDialog"><form id="exerciseForm"><h2>Eigene Übung</h2><label>Name<input id="exerciseName" maxlength="80" required></label><label class="check"><input id="exerciseBody" type="checkbox"> Eigengewichtsübung</label><div class="button-row"><button type="button" data-close="exerciseDialog">Abbrechen</button><button type="submit" class="primary">Hinzufügen</button></div></form></dialog>
+  <datalist id="exerciseOptions"></datalist>
+  <div id="e1rmInfo" class="formula-popover" popover><h3>Epley-Formel</h3><p>Gewicht × (1 + Wiederholungen ÷ 30). Bei einer Wiederholung zählt das Gewicht direkt.</p><p class="micro">Tagesmittel aus Sätzen mit 1–12 Wiederholungen und Zusatzgewicht. Eine Schätzung, kein getestetes Maximum.</p><button type="button" class="quiet small" popovertarget="e1rmInfo" popovertargetaction="hide">Schließen</button></div>
+</body>
+</html>

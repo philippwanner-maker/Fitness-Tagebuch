@@ -1,0 +1,17 @@
+const assert=require('node:assert/strict');
+const appModule={exports:{}};
+require('node:vm').runInNewContext(require('node:fs').readFileSync(require('node:path').join(__dirname,'../public/app.js'),'utf8'),{module:appModule,crypto:require('node:crypto').webcrypto});
+const {exerciseSets,plateLabel,migrate}=appModule.exports;
+const exercise={name:'Bankdrücken',body:false,sets:3};
+const history=[{id:'old',date:'2026-10-20',createdAt:1,exercises:[{...exercise,sets:[{id:'a',weight:50,reps:10},{id:'b',weight:45,reps:12}]}]},{id:'new',date:'2026-10-20',createdAt:2,exercises:[{...exercise,sets:[{id:'c',weight:60,reps:8}]}]}];
+const sets=exerciseSets(history,exercise,'2026-10-21');
+assert.equal(sets.length,1);assert.equal(sets[0].weight,60);assert.equal(sets[0].reps,8);assert.notEqual(sets[0].id,'c');
+sets[0].weight=100;assert.equal(history[1].exercises[0].sets[0].weight,60);
+assert.equal(exerciseSets(history,exercise,'2026-10-21','new').length,2);
+assert.equal(exerciseSets(history,exercise,'2026-10-19')[0].weight,'');
+assert.match(plateLabel(60),/1 × 20 kg/);assert.match(plateLabel(50),/1 × 15 kg/);
+assert.match(plateLabel(22.5),/1 × 1,25 kg/);assert.match(plateLabel(20),/ohne Scheiben/);
+assert.match(plateLabel(19),/nicht möglich/);assert.match(plateLabel(21),/nicht exakt/);
+const db=migrate({version:3,workouts:[],draft:null,custom:[],avatar:'',plans:[{id:'p',name:'Plan',days:[{id:'d',name:'Push',color:'#ffffff',exercises:[exercise]}]}]});
+assert.equal(db.activePlanId,'p');assert.equal(migrate({...db,activePlanId:'deleted'}).activePlanId,'p');
+console.log('PASS: Historical sets, isolated copies, date filtering, plates and active-plan migration.');
